@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+<section class="section dashboard">
+    <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-12">
+            <div class="row">
+
+                <!-- Category Card -->
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card category-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total <span>| Category</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-files"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>{{category_count}}</h6>
+                                    <a href="{% url 'manage_category' %}">
+                                        <span class="text-muted small pt-2 ps-1">View Details</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Category Card -->
+
+                <!-- Subcategory Card -->
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card subcategory-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total <span>| Subcategory</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-files"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>{{subcategory_count}}</h6>
+                                    <a href="{% url 'manage_subcategory' %}">
+                                        <span class="text-muted small pt-2 ps-1">View Details</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Subcategory Card -->
+
+                <!-- News Card -->
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card news-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total <span>| News</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-files"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>{{news_count}}</h6>
+                                    <a href="{% url 'manage_posts' %}">
+                                        <span class="text-muted small pt-2 ps-1">View Details</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End News Card -->
+
+                <!-- Sub-Admin Card -->
+                <div class="col-xxl-6 col-md-6">
+                    <div class="card info-card subadmin-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Total <span>| Sub-Admin</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>{{subadmin_count}}</h6>
+                                    <a href="{% url 'manage_subadmin' %}">
+                                        <span class="text-muted small pt-2 ps-1">View Details</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Sub-Admin Card -->
+
+                <!-- Sentiment Analysis Section -->
+                <div class="col-lg-12">
+                    <div class="card info-card sentiment-analysis-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Sentiment Analysis <span>| User Comments</span></h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="stat-box">
+                                        <h6>Positive Comments</h6>
+                                        <p>{{sentiments.Positive}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-box">
+                                        <h6>Negative Comments</h6>
+                                        <p>{{sentiments.Negative}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-box">
+                                        <h6>Neutral Comments</h6>
+                                        <p>{{sentiments.Neutral}}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Perform Sentiment Analysis Button -->
+                            <form method="POST" action="{% url 'perform_sentiment_analysis' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary mt-4">Perform Sentiment Analysis</button>
+                            </form>
+                        </div>
+                    </div>
+                </div><!-- End Sentiment Analysis Section -->
+
+                <!-- Sentiment Analysis by News Section -->
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Sentiment Analysis Per News Article</h5>
+
+                            <!-- Table to Display Sentiments Per News Article -->
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>News Title</th>
+                                        <th>Positive Comments</th>
+                                        <th>Negative Comments</th>
+                                        <th>Neutral Comments</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for news_id, sentiments in request.session.news_sentiments.items %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ sentiments.title }}</td>
+                                        <td>{{ sentiments.positive }}</td>
+                                        <td>{{ sentiments.negative }}</td>
+                                        <td>{{ sentiments.neutral }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div><!-- End Sentiment Analysis by News Section -->
+
+            </div>
+        </div><!-- End Left side columns -->
+
+    </div>
+</section>
+{% endblock %}
